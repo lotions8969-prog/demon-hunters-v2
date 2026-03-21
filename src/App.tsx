@@ -11,11 +11,18 @@ import { BallCatch } from '@/games/BallCatch'
 import { QuickDraw } from '@/games/QuickDraw'
 import { Janken } from '@/games/Janken'
 import { NumberTouch } from '@/games/NumberTouch'
-import { makeAudio } from '@/lib/audio'
+import { BubblePop } from '@/games/BubblePop'
+import { HideSeek } from '@/games/HideSeek'
+import { Puzzle } from '@/games/Puzzle'
+import { SimonSays } from '@/games/SimonSays'
+import { Slot } from '@/games/Slot'
+import { SpeedTap } from '@/games/SpeedTap'
+import { MovingTarget } from '@/games/MovingTarget'
+import { DemonAvoid } from '@/games/DemonAvoid'
+import { PhotoSnap } from '@/games/PhotoSnap'
+import { makeAudio, YT_PLAYLIST } from '@/lib/audio'
 import { GAMES } from '@/lib/characters'
 import type { Character, GameId } from '@/lib/types'
-
-const YT_VIDEO_ID = '-JStINmfSbk'
 
 type Screen = 'title' | 'select' | 'hub' | 'game' | 'result'
 
@@ -36,8 +43,8 @@ export default function App() {
     document.head.appendChild(tag)
     ;(window as any).onYouTubeIframeAPIReady = () => {
       ytPlayerRef.current = new (window as any).YT.Player('yt-audio', {
-        height: '1', width: '1', videoId: YT_VIDEO_ID,
-        playerVars: { autoplay: 0, controls: 0, loop: 1, playlist: YT_VIDEO_ID },
+        height: '1', width: '1', videoId: YT_PLAYLIST[0],
+        playerVars: { autoplay: 0, controls: 0, loop: 1, playlist: YT_PLAYLIST.join(',') },
         events: { onReady: () => { ytReadyRef.current = true } },
       })
     }
@@ -71,6 +78,15 @@ export default function App() {
       {screen === 'game' && char && audio && gameId === 'quickDraw' && <QuickDraw char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
       {screen === 'game' && char && audio && gameId === 'janken' && <Janken char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
       {screen === 'game' && char && audio && gameId === 'numberTouch' && <NumberTouch char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
+      {screen === 'game' && char && audio && gameId === 'bubblePop' && <BubblePop char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
+      {screen === 'game' && char && audio && gameId === 'hideSeek' && <HideSeek char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
+      {screen === 'game' && char && audio && gameId === 'puzzle' && <Puzzle char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
+      {screen === 'game' && char && audio && gameId === 'simonSays' && <SimonSays char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
+      {screen === 'game' && char && audio && gameId === 'slot' && <Slot char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
+      {screen === 'game' && char && audio && gameId === 'speedTap' && <SpeedTap char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
+      {screen === 'game' && char && audio && gameId === 'movingTarget' && <MovingTarget char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
+      {screen === 'game' && char && audio && gameId === 'demonAvoid' && <DemonAvoid char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
+      {screen === 'game' && char && audio && gameId === 'photoSnap' && <PhotoSnap char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
       {screen === 'result' && char && game && (
         <ResultScreen char={char} score={lastScore} highScore={highScores[gameId!] || 0} gameLabel={`${game.emoji} ${game.label}`} onReplay={() => setScreen('game')} onHub={backToHub} />
       )}

@@ -1,3 +1,13 @@
+export const YT_PLAYLIST = [
+  '-JStINmfSbk',  // GOLDEN (full performance)
+  'hohuFW0zQUw',  // Golden MV (Netflix Philippines)
+  'QGsevnbItdU',  // How It's Done (Official Lyric Video)
+  'tcuW6SdYQSA',  // What It Sounds Like
+  '8rrWRGkSypc',  // Free (Rumi + Jinu duet)
+  'aNad2Ml2Lfw',  // Soda Pop (Saja Boys)
+  '2FS3JAPTKXs',  // Your Idol (Saja Boys)
+]
+
 export function makeAudio(getYtPlayer: () => any) {
   let ctx: AudioContext | null = null
   let master: GainNode | null = null
@@ -35,9 +45,12 @@ export function makeAudio(getYtPlayer: () => any) {
   function ytPlay() {
     try {
       const p = getYtPlayer()
-      if (!p?.playVideo) return
+      if (!p?.loadPlaylist) return
+      const state = p.getPlayerState?.()
+      if (state === 1) return // already playing
       p.setVolume(38)
-      if (p.getPlayerState?.() !== 1) p.playVideo()
+      p.loadPlaylist({ listType: 'playlist', list: YT_PLAYLIST, index: Math.floor(Math.random() * YT_PLAYLIST.length) })
+      p.setLoop(true)
     } catch {}
   }
 

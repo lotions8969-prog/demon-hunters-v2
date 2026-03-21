@@ -1,5 +1,5 @@
 export type CharId = 'rumi' | 'mira' | 'zoey'
-export type GameId = 'starCatch' | 'demonShoot' | 'rhythmTap' | 'memoryCards' | 'ballCatch' | 'quickDraw' | 'janken' | 'numberTouch'
+export type GameId = 'starCatch' | 'demonShoot' | 'rhythmTap' | 'memoryCards' | 'ballCatch' | 'quickDraw' | 'janken' | 'numberTouch' | 'bubblePop' | 'hideSeek' | 'puzzle' | 'simonSays' | 'slot' | 'speedTap' | 'movingTarget' | 'demonAvoid' | 'photoSnap'
 export interface Character {
   id: CharId
   name: string
