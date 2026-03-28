@@ -1,9 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import type { Character, ScoreParticleData } from '@/lib/types'
+import type { Character } from '@/lib/types'
 import type { AudioEngine } from '@/lib/audio'
 import { HUD } from '@/components/HUD'
 import { BackBtn } from '@/components/BackBtn'
-import { ScoreParticle } from '@/components/ScoreParticle'
 
 interface Obstacle { id: number; y: number; gapY: number; gapH: number; x: number }
 interface Star { id: number; x: number; y: number; collected: boolean }
@@ -15,7 +14,6 @@ export function RocketBoost({ char, audio, onEnd, onBack }: Props) {
   const [rocketY, setRocketY] = useState(0.5)
   const [obstacles, setObstacles] = useState<Obstacle[]>([])
   const [stars, setStars] = useState<Star[]>([])
-  const [particles] = useState<ScoreParticleData[]>([])
   const [boosting, setBoosting] = useState(false)
 
   const scoreRef = useRef(0)
@@ -43,10 +41,22 @@ export function RocketBoost({ char, audio, onEnd, onBack }: Props) {
     audio.start('rocketBoost')
     const W = window.innerWidth
 
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.code === 'Space' || e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
+        boostingRef.current = true; setBoosting(true); e.preventDefault()
+      }
+    }
+    const onKeyUp = (e: KeyboardEvent) => {
+      if (e.code === 'Space' || e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
+        boostingRef.current = false; setBoosting(false)
+      }
+    }
+    window.addEventListener('keydown', onKeyDown)
+    window.addEventListener('keyup', onKeyUp)
+
     function loop() {
       if (!activeRef.current) return
 
-      // Physics
       const gravity = 0.008
       const thrust = -0.018
       velocityRef.current += boostingRef.current ? thrust : gravity
@@ -54,49 +64,33 @@ export function RocketBoost({ char, audio, onEnd, onBack }: Props) {
       rocketYRef.current = Math.max(0.05, Math.min(0.95, rocketYRef.current + velocityRef.current))
       setRocketY(rocketYRef.current)
 
-      // Move obstacles
       const prog = 1 - timeRef.current / 60
       const speed = 3 + prog * 2
       obstaclesRef.current = obstaclesRef.current.map(o => ({ ...o, x: o.x - speed })).filter(o => o.x > -80)
 
-      // Spawn new obstacles
       const lastObs = obstaclesRef.current[obstaclesRef.current.length - 1]
       if (!lastObs || lastObs.x < W - 220) {
         const gapH = 0.25 - prog * 0.05
         const gapY = 0.15 + Math.random() * (0.7 - gapH)
-        obstaclesRef.current = [...obstaclesRef.current, {
-          id: nextId.current++, y: 0, gapY, gapH, x: W + 20,
-        }]
+        obstaclesRef.current = [...obstaclesRef.current, { id: nextId.current++, y: 0, gapY, gapH, x: W + 20 }]
       }
 
-      // Move stars
       starsRef.current = starsRef.current.map(s => ({ ...s, x: s.x - speed })).filter(s => s.x > -30 && !s.collected)
 
-      // Spawn stars
       if (Math.random() < 0.01) {
-        starsRef.current = [...starsRef.current, {
-          id: nextId.current++,
-          x: W + 20,
-          y: 0.2 + Math.random() * 0.6,
-          collected: false,
-        }]
+        starsRef.current = [...starsRef.current, { id: nextId.current++, x: W + 20, y: 0.2 + Math.random() * 0.6, collected: false }]
       }
 
-      // Collision detection
       const rY = rocketYRef.current
       const rocketX = 0.15
       for (const obs of obstaclesRef.current) {
         const obsXFrac = obs.x / W
         if (Math.abs(obsXFrac - rocketX) < 0.05) {
           const inGap = rY >= obs.gapY && rY <= obs.gapY + obs.gapH
-          if (!inGap) {
-            endGame()
-            return
-          }
+          if (!inGap) { endGame(); return }
         }
       }
 
-      // Star collection
       for (const star of starsRef.current) {
         if (star.collected) continue
         const starXFrac = star.x / W
@@ -122,7 +116,12 @@ export function RocketBoost({ char, audio, onEnd, onBack }: Props) {
       if (n <= 0) { clearInterval(timerRef.current); endGame() }
     }, 1000)
 
-    return () => { activeRef.current = false; cancelAnimationFrame(rafRef.current); clearInterval(timerRef.current) }
+    return () => {
+      activeRef.current = false
+      cancelAnimationFrame(rafRef.current); clearInterval(timerRef.current)
+      window.removeEventListener('keydown', onKeyDown)
+      window.removeEventListener('keyup', onKeyUp)
+    }
   }, [audio, endGame])
 
   function startBoost() { boostingRef.current = true; setBoosting(true) }
@@ -144,62 +143,32 @@ export function RocketBoost({ char, audio, onEnd, onBack }: Props) {
         <div className="h-full transition-all duration-1000" style={{ width: `${(timeLeft / 60) * 100}%`, background: urgent ? '#F87171' : char.color }} />
       </div>
 
-      {/* Obstacles */}
       {obstacles.map(o => (
         <div key={o.id}>
-          {/* Top wall */}
-          <div className="absolute" style={{
-            left: o.x - 20, top: 0, width: 40,
-            height: `${o.gapY * 100}%`,
-            background: `linear-gradient(90deg, ${char.color}44, ${char.color}88)`,
-            border: `2px solid ${char.color}`,
-            borderRadius: '0 0 8px 8px',
-          }} />
-          {/* Bottom wall */}
-          <div className="absolute" style={{
-            left: o.x - 20, bottom: 0, width: 40,
-            height: `${(1 - o.gapY - o.gapH) * 100}%`,
-            background: `linear-gradient(90deg, ${char.color}44, ${char.color}88)`,
-            border: `2px solid ${char.color}`,
-            borderRadius: '8px 8px 0 0',
-          }} />
+          <div className="absolute" style={{ left: o.x - 20, top: 0, width: 40, height: `${o.gapY * 100}%`, background: `linear-gradient(90deg, ${char.color}44, ${char.color}88)`, border: `2px solid ${char.color}`, borderRadius: '0 0 8px 8px' }} />
+          <div className="absolute" style={{ left: o.x - 20, bottom: 0, width: 40, height: `${(1 - o.gapY - o.gapH) * 100}%`, background: `linear-gradient(90deg, ${char.color}44, ${char.color}88)`, border: `2px solid ${char.color}`, borderRadius: '8px 8px 0 0' }} />
         </div>
       ))}
 
-      {/* Stars */}
       {stars.filter(s => !s.collected).map(s => (
-        <div key={s.id} className="absolute pointer-events-none" style={{
-          left: s.x - 16, top: `calc(${s.y * 100}% - 16px)`,
-          fontSize: '1.8rem', lineHeight: 1,
-          filter: 'drop-shadow(0 0 6px #FFD700)',
-        }}>⭐</div>
+        <div key={s.id} className="absolute pointer-events-none" style={{ left: s.x - 16, top: `calc(${s.y * 100}% - 16px)`, fontSize: '1.8rem', lineHeight: 1, filter: 'drop-shadow(0 0 6px #FFD700)' }}>⭐</div>
       ))}
 
-      {/* Rocket */}
       <div className="absolute pointer-events-none" style={{
-        left: `15%`,
-        top: `${rocketY * 100}%`,
+        left: '15%', top: `${rocketY * 100}%`,
         transform: 'translate(-50%, -50%)',
         fontSize: '2.5rem',
         filter: `drop-shadow(0 0 ${boosting ? '16px' : '6px'} ${char.color})`,
-        zIndex: 20,
-        transition: 'filter .1s',
+        zIndex: 20, transition: 'filter .1s',
       }}>🚀</div>
 
       {boosting && (
-        <div className="absolute pointer-events-none" style={{
-          left: `calc(15% - 60px)`,
-          top: `${rocketY * 100}%`,
-          transform: 'translateY(-50%)',
-          fontSize: '1.5rem',
-          opacity: 0.8,
-        }}>🔥</div>
+        <div className="absolute pointer-events-none" style={{ left: 'calc(15% - 60px)', top: `${rocketY * 100}%`, transform: 'translateY(-50%)', fontSize: '1.5rem', opacity: 0.8 }}>🔥</div>
       )}
 
       <div className="absolute bottom-4 left-0 right-0 text-center text-xs pointer-events-none" style={{ color: 'rgba(255,255,255,.4)' }}>
-        おしてブースト！はなして下がる！
+        クリックホールド or スペースキーでブースト！
       </div>
-      {particles.map(p => <ScoreParticle key={p.id} p={p} />)}
     </div>
   )
 }

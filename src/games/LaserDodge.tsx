@@ -27,6 +27,7 @@ export function LaserDodge({ char, audio, onEnd, onBack }: Props) {
   const spawnRef = useRef(0)
   const hitRef = useRef(false)
   const scoreTickRef = useRef(0)
+  const keysRef = useRef<Record<string, boolean>>({})
 
   const endGame = useCallback(() => {
     if (!activeRef.current) return
@@ -40,10 +41,27 @@ export function LaserDodge({ char, audio, onEnd, onBack }: Props) {
     audio.start('laserDodge')
     const H = window.innerHeight
 
+    const onKeyDown = (e: KeyboardEvent) => { keysRef.current[e.key] = true; e.preventDefault() }
+    const onKeyUp = (e: KeyboardEvent) => { keysRef.current[e.key] = false }
+    window.addEventListener('keydown', onKeyDown)
+    window.addEventListener('keyup', onKeyUp)
+
     function loop() {
       if (!activeRef.current) return
+
+      // Keyboard movement
+      const k = keysRef.current
+      const SPEED = 0.012
+      if (k['ArrowUp'] || k['w'] || k['W']) {
+        playerYRef.current = Math.max(0.05, playerYRef.current - SPEED)
+        setPlayerY(playerYRef.current)
+      }
+      if (k['ArrowDown'] || k['s'] || k['S']) {
+        playerYRef.current = Math.min(0.95, playerYRef.current + SPEED)
+        setPlayerY(playerYRef.current)
+      }
+
       const now = Date.now()
-      // Check laser hits
       lasersRef.current = lasersRef.current.map(l => {
         const active = now >= l.fireAt && now < l.fireAt + l.duration
         const warn = now >= l.warnAt && now < l.fireAt
@@ -59,11 +77,9 @@ export function LaserDodge({ char, audio, onEnd, onBack }: Props) {
         }
         return { ...l, active, warn }
       })
-      // Remove expired lasers
       lasersRef.current = lasersRef.current.filter(l => now < l.fireAt + l.duration + 200)
       setLasers([...lasersRef.current])
 
-      // Score per second survived
       scoreTickRef.current++
       if (scoreTickRef.current % 60 === 0) {
         scoreRef.current += 2
@@ -91,12 +107,8 @@ export function LaserDodge({ char, audio, onEnd, onBack }: Props) {
         usedYs.push(y)
         lasersRef.current = [...lasersRef.current, {
           id: nextId.current++,
-          y,
-          active: false,
-          warn: false,
-          warnAt: now + 100,
-          fireAt: now + 800,
-          duration: 600,
+          y, active: false, warn: false,
+          warnAt: now + 100, fireAt: now + 800, duration: 600,
         }]
       }
       const interval = Math.max(1200, 2500 - prog * 1300)
@@ -104,7 +116,12 @@ export function LaserDodge({ char, audio, onEnd, onBack }: Props) {
     }
     spawnRef.current = window.setTimeout(spawn, 1000)
 
-    return () => { activeRef.current = false; cancelAnimationFrame(rafRef.current); clearInterval(timerRef.current); clearTimeout(spawnRef.current) }
+    return () => {
+      activeRef.current = false
+      cancelAnimationFrame(rafRef.current); clearInterval(timerRef.current); clearTimeout(spawnRef.current)
+      window.removeEventListener('keydown', onKeyDown)
+      window.removeEventListener('keyup', onKeyUp)
+    }
   }, [audio, endGame])
 
   function movePlayer(e: React.PointerEvent) {
@@ -128,14 +145,12 @@ export function LaserDodge({ char, audio, onEnd, onBack }: Props) {
       </div>
 
       {/* Player */}
-      <div className="absolute transition-none" style={{
-        left: '15%',
-        top: `${playerY * 100}%`,
+      <div className="absolute transition-none pointer-events-none" style={{
+        left: '15%', top: `${playerY * 100}%`,
         transform: 'translate(-50%, -50%)',
         fontSize: '2.5rem',
         filter: `drop-shadow(0 0 8px ${char.color})`,
         zIndex: 20,
-        pointerEvents: 'none',
       }}>🏃</div>
 
       {/* Lasers */}
@@ -144,8 +159,7 @@ export function LaserDodge({ char, audio, onEnd, onBack }: Props) {
           {l.warn && !l.active && (
             <div className="absolute left-0 right-0 flex items-center" style={{
               top: l.y - 2, height: 4,
-              background: 'rgba(239,68,68,.3)',
-              zIndex: 10,
+              background: 'rgba(239,68,68,.3)', zIndex: 10,
               animation: 'pulse .3s infinite',
             }} />
           )}
@@ -160,8 +174,8 @@ export function LaserDodge({ char, audio, onEnd, onBack }: Props) {
         </div>
       ))}
 
-      <div className="absolute bottom-8 left-0 right-0 text-center text-xs" style={{ color: 'rgba(255,255,255,.4)' }}>
-        スクリーンをタッチして移動！レーザーをよけろ！
+      <div className="absolute bottom-8 left-0 right-0 text-center text-xs pointer-events-none" style={{ color: 'rgba(255,255,255,.4)' }}>
+        マウス移動 or W / S キーで上下に移動！レーザーをよけろ！
       </div>
       {particles.map(p => <ScoreParticle key={p.id} p={p} />)}
     </div>

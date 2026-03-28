@@ -50,7 +50,8 @@ export function ColorStop({ char, audio, onEnd, onBack }: Props) {
     audio.start('colorStop')
     targetHueRef.current = Math.floor(Math.random() * 360)
     setTargetHue(targetHueRef.current)
-
+    const onKey = (e: KeyboardEvent) => { if (e.code === 'Space' || e.key === 'Enter') { e.preventDefault(); stop() } }
+    window.addEventListener('keydown', onKey)
     function loop() {
       if (!activeRef.current) return
       hueRef.current = (hueRef.current + dirRef.current * speedRef.current + 360) % 360
@@ -58,7 +59,7 @@ export function ColorStop({ char, audio, onEnd, onBack }: Props) {
       rafRef.current = requestAnimationFrame(loop)
     }
     rafRef.current = requestAnimationFrame(loop)
-    return () => { activeRef.current = false; cancelAnimationFrame(rafRef.current) }
+    return () => { activeRef.current = false; cancelAnimationFrame(rafRef.current); window.removeEventListener('keydown', onKey) }
   }, [audio, endGame])
 
   function stop() {
@@ -143,7 +144,7 @@ export function ColorStop({ char, audio, onEnd, onBack }: Props) {
           style={{ background: done ? 'rgba(255,255,255,.2)' : char.color, boxShadow: done ? 'none' : `0 0 30px ${char.color}`, border: 'none', touchAction: 'none', cursor: done ? 'default' : 'pointer' }}>
           🎨 ストップ！
         </button>
-        <div className="text-xs" style={{ color: 'rgba(255,255,255,.4)' }}>もくひょうのいろでとめよう！</div>
+        <div className="text-xs" style={{ color: 'rgba(255,255,255,.4)' }}>クリック or スペースキーで止める！</div>
       </div>
       {particles.map(p => <ScoreParticle key={p.id} p={p} />)}
     </div>

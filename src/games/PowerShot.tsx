@@ -39,6 +39,8 @@ export function PowerShot({ char, audio, onEnd, onBack }: Props) {
 
   useEffect(() => {
     audio.start('powerShot')
+    const onKey = (e: KeyboardEvent) => { if (e.code === 'Space' || e.key === 'Enter') { e.preventDefault(); shoot() } }
+    window.addEventListener('keydown', onKey)
     function loop() {
       if (!activeRef.current) return
       powerRef.current += dirRef.current * speedRef.current
@@ -48,7 +50,7 @@ export function PowerShot({ char, audio, onEnd, onBack }: Props) {
       rafRef.current = requestAnimationFrame(loop)
     }
     rafRef.current = requestAnimationFrame(loop)
-    return () => { activeRef.current = false; cancelAnimationFrame(rafRef.current) }
+    return () => { activeRef.current = false; cancelAnimationFrame(rafRef.current); window.removeEventListener('keydown', onKey) }
   }, [audio, endGame])
 
   function shoot() {
@@ -115,7 +117,7 @@ export function PowerShot({ char, audio, onEnd, onBack }: Props) {
           style={{ background: done ? 'rgba(255,255,255,.2)' : char.color, boxShadow: done ? 'none' : `0 0 30px ${char.color}`, border: 'none', touchAction: 'none', cursor: done ? 'default' : 'pointer' }}>
           🔫 シュート！
         </button>
-        <div className="text-xs" style={{ color: 'rgba(255,255,255,.4)' }}>みどりのゾーンでとめよう！まんなかで PERFECT！</div>
+        <div className="text-xs" style={{ color: 'rgba(255,255,255,.4)' }}>クリック or スペースキーでシュート！</div>
       </div>
       {particles.map(p => <ScoreParticle key={p.id} p={p} />)}
     </div>

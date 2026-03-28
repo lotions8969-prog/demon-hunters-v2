@@ -84,7 +84,23 @@ export function TapRhythm({ char, audio, onEnd, onBack }: Props) {
     }
     spawnRef.current = window.setTimeout(spawnBeat, 500)
 
-    return () => { activeRef.current = false; cancelAnimationFrame(rafRef.current); clearInterval(timerRef.current); clearTimeout(spawnRef.current) }
+    const onKey = (e: KeyboardEvent) => {
+      if (!activeRef.current) return
+      if (e.code === 'Space' || e.key === 'Enter' || e.key === 'f' || e.key === 'F' || e.key === 'j' || e.key === 'J') {
+        e.preventDefault()
+        // Tap the note closest to the hit line
+        const now = Date.now()
+        const closest = notesRef.current.reduce((best: typeof notesRef.current[0] | null, n) => {
+          const diff = Math.abs(now - n.hitTime)
+          if (diff > 400) return best
+          if (!best) return n
+          return diff < Math.abs(now - best.hitTime) ? n : best
+        }, null)
+        if (closest) tapNote(closest.id, closest.x, H * 0.8)
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => { activeRef.current = false; cancelAnimationFrame(rafRef.current); clearInterval(timerRef.current); clearTimeout(spawnRef.current); window.removeEventListener('keydown', onKey) }
   }, [audio, endGame])
 
   function tapNote(id: number, ex: number, ey: number) {
@@ -155,7 +171,7 @@ export function TapRhythm({ char, audio, onEnd, onBack }: Props) {
       })}
 
       <div className="absolute bottom-4 left-0 right-0 text-center text-xs" style={{ color: 'rgba(255,255,255,.4)' }}>
-        ラインに来たらタップ！
+        クリック or スペース / F / J キーでタップ！
       </div>
       {particles.map(p => <ScoreParticle key={p.id} p={p} />)}
     </div>

@@ -68,6 +68,16 @@ export function AsteroidRun({ char, audio, onEnd, onBack }: Props) {
       }
     }
 
+    const keys: Record<string, boolean> = {}
+    const onKeyDown = (e: KeyboardEvent) => {
+      keys[e.key] = true
+      if (!started && (e.code === 'Space' || e.key === 'Enter')) { started = true; setStartedUI(true) }
+      e.preventDefault()
+    }
+    const onKeyUp = (e: KeyboardEvent) => { keys[e.key] = false }
+    window.addEventListener('keydown', onKeyDown)
+    window.addEventListener('keyup', onKeyUp)
+
     function onTouch(e: PointerEvent) {
       if (!started) { started = true; setStartedUI(true) }
       targetPX = e.clientX
@@ -107,10 +117,10 @@ export function AsteroidRun({ char, audio, onEnd, onBack }: Props) {
         ctx.fillStyle = 'white'
         ctx.font = 'bold 20px sans-serif'
         ctx.textAlign = 'center'
-        ctx.fillText('タップしてスタート！', W / 2, H / 2)
+        ctx.fillText('クリック or スペースでスタート！', W / 2, H / 2)
         ctx.font = '16px sans-serif'
         ctx.fillStyle = 'rgba(255,255,255,.5)'
-        ctx.fillText('タップ/ドラッグで移動', W / 2, H / 2 + 36)
+        ctx.fillText('マウス移動 or ← → キーで移動', W / 2, H / 2 + 36)
         // Draw ship
         ctx.save(); ctx.translate(px, py)
         ctx.fillStyle = char.color; ctx.beginPath()
@@ -127,6 +137,9 @@ export function AsteroidRun({ char, audio, onEnd, onBack }: Props) {
 
       // Move player
       if (invincible > 0) invincible -= dt
+      // Keyboard movement
+      if (keys['ArrowLeft'] || keys['a'] || keys['A']) targetPX = Math.max(24, targetPX - 6 * dt)
+      if (keys['ArrowRight'] || keys['d'] || keys['D']) targetPX = Math.min(W - 24, targetPX + 6 * dt)
       vx += (targetPX - px) * 0.08 * dt
       vx *= 0.85
       px += vx * dt
@@ -199,6 +212,8 @@ export function AsteroidRun({ char, audio, onEnd, onBack }: Props) {
       activeRef.current = false
       cancelAnimationFrame(rafRef.current)
       canvas.removeEventListener('pointerdown', onTouch)
+      window.removeEventListener('keydown', onKeyDown)
+      window.removeEventListener('keyup', onKeyUp)
     }
   }, [audio, char, endGame])
 

@@ -43,7 +43,13 @@ export function RhythmTap({ char, audio, onEnd, onBack }: Props) {
       spawnRef.current=window.setTimeout(spawn,rate)
     }
     spawnRef.current=window.setTimeout(spawn,600)
-    return()=>{activeRef.current=false;cancelAnimationFrame(rafRef.current);clearTimeout(spawnRef.current);clearInterval(timerRef.current)}
+    const onKey=(e:KeyboardEvent)=>{
+      if(e.key==='a'||e.key==='A'||e.key==='f'||e.key==='F'||e.key==='1'){e.preventDefault();tapCol(0)}
+      else if(e.key==='s'||e.key==='S'||e.key==='g'||e.key==='G'||e.key==='2'){e.preventDefault();tapCol(1)}
+      else if(e.key==='d'||e.key==='D'||e.key==='h'||e.key==='H'||e.key==='3'){e.preventDefault();tapCol(2)}
+    }
+    window.addEventListener('keydown',onKey)
+    return()=>{activeRef.current=false;cancelAnimationFrame(rafRef.current);clearTimeout(spawnRef.current);clearInterval(timerRef.current);window.removeEventListener('keydown',onKey)}
   },[audio,endGame])
 
   function tapCol(col:number){
@@ -111,7 +117,7 @@ export function RhythmTap({ char, audio, onEnd, onBack }: Props) {
             <div className="w-11 h-11 rounded-full overflow-hidden" style={{border:`2px solid ${c.color}`,boxShadow:`0 0 12px ${c.color}88`}}>
               <img src={c.img.profile} className="w-full h-full object-cover object-top" draggable={false}/>
             </div>
-            <div className="text-xs font-bold" style={{color:c.color}}>{c.name}</div>
+            <div className="text-xs font-bold" style={{color:c.color}}>{c.name} [{['A','S','D'][i]}]</div>
           </button>
         ))}
       </div>

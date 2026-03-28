@@ -47,7 +47,7 @@ export function DemonAvoid({ char, audio, onEnd, onBack }: Props) {
   const spawnRef = useRef(0)
   const starSpawnRef = useRef(0)
   const activeRef = useRef(true)
-  const dragRef = useRef(false)
+  const keysRef = useRef<Record<string, boolean>>({})
 
   const endGame = useCallback(() => {
     if (!activeRef.current) return
@@ -65,14 +65,30 @@ export function DemonAvoid({ char, audio, onEnd, onBack }: Props) {
     const H = window.innerHeight
     const W = window.innerWidth
 
+    const onKeyDown = (e: KeyboardEvent) => { keysRef.current[e.key] = true }
+    const onKeyUp = (e: KeyboardEvent) => { keysRef.current[e.key] = false }
+    window.addEventListener('keydown', onKeyDown)
+    window.addEventListener('keyup', onKeyUp)
+
     function loop() {
       if (!activeRef.current) return
+
+      // Keyboard movement
+      const k = keysRef.current
+      const SPEED = 1.2
+      if (k['ArrowLeft'] || k['a'] || k['A']) {
+        playerXRef.current = Math.max(5, playerXRef.current - SPEED)
+        setPlayerX(playerXRef.current)
+      }
+      if (k['ArrowRight'] || k['d'] || k['D']) {
+        playerXRef.current = Math.min(95, playerXRef.current + SPEED)
+        setPlayerX(playerXRef.current)
+      }
 
       const prog = 1 - timeRef.current / 60
       const moved = demonsRef.current.map(d => ({ ...d, y: d.y + d.speed * (1 + prog) })).filter(d => d.y < H + 80)
       const movedStars = starsRef.current.map(s => ({ ...s, y: s.y + 2 })).filter(s => s.y < H + 40)
 
-      // collision check
       const px = (playerXRef.current / 100) * W
       const py = H - 80
       let hitLife = false
@@ -162,11 +178,12 @@ export function DemonAvoid({ char, audio, onEnd, onBack }: Props) {
       clearInterval(timerRef.current)
       clearTimeout(spawnRef.current)
       clearTimeout(starSpawnRef.current)
+      window.removeEventListener('keydown', onKeyDown)
+      window.removeEventListener('keyup', onKeyUp)
     }
   }, [audio, endGame])
 
   const handlePointer = useCallback((e: React.PointerEvent) => {
-    dragRef.current = true
     const pct = Math.max(5, Math.min(95, (e.clientX / window.innerWidth) * 100))
     playerXRef.current = pct
     setPlayerX(pct)
@@ -189,49 +206,34 @@ export function DemonAvoid({ char, audio, onEnd, onBack }: Props) {
       </div>
       <div className="absolute top-14 left-1/2 -translate-x-1/2 z-20 text-2xl">{livesStr}</div>
 
-      {/* Demons */}
       {demons.map(d => (
-        <div
-          key={d.id}
-          className="absolute pointer-events-none text-center"
-          style={{ left: d.x - d.size / 2, top: d.y - d.size / 2, fontSize: d.size, lineHeight: 1, zIndex: 10 }}
-        >
+        <div key={d.id} className="absolute pointer-events-none text-center"
+          style={{ left: d.x - d.size / 2, top: d.y - d.size / 2, fontSize: d.size, lineHeight: 1, zIndex: 10 }}>
           {d.emoji}
         </div>
       ))}
 
-      {/* Stars */}
       {stars.map(s => (
-        <div
-          key={s.id}
-          className="absolute pointer-events-none text-center"
-          style={{ left: s.x - 20, top: s.y - 20, fontSize: 36, lineHeight: 1, zIndex: 10 }}
-        >
+        <div key={s.id} className="absolute pointer-events-none text-center"
+          style={{ left: s.x - 20, top: s.y - 20, fontSize: 36, lineHeight: 1, zIndex: 10 }}>
           ⭐
         </div>
       ))}
 
-      {/* Player */}
-      <div
-        className="absolute pointer-events-none"
+      <div className="absolute pointer-events-none"
         style={{
-          left: `${playerX}%`,
-          bottom: 20,
+          left: `${playerX}%`, bottom: 20,
           transform: 'translateX(-50%)',
-          width: 60,
-          height: 80,
-          borderRadius: 10,
-          overflow: 'hidden',
+          width: 60, height: 80, borderRadius: 10, overflow: 'hidden',
           border: invincible ? '3px solid #FFD700' : `2px solid ${char.color}`,
           boxShadow: invincible ? '0 0 20px #FFD700' : `0 0 12px ${char.color}66`,
           zIndex: 20,
-        }}
-      >
-        <img
-          src={char.img.profile}
-          style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }}
-          draggable={false}
-        />
+        }}>
+        <img src={char.img.profile} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }} draggable={false} />
+      </div>
+
+      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap pointer-events-none text-xs" style={{ color: 'rgba(255,255,255,.4)' }}>
+        マウス移動 or ← → キーで移動
       </div>
 
       {particles.map(p => <ScoreParticle key={p.id} p={p} />)}

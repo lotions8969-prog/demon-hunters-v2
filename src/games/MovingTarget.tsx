@@ -25,6 +25,7 @@ export function MovingTarget({ char, audio, onEnd, onBack }: Props) {
   const speedRef = useRef(0.012)
   const rafRef = useRef(0)
   const activeRef = useRef(true)
+  const tapMeterRef = useRef<(() => void) | null>(null)
 
   const endGame = useCallback(() => {
     if (!activeRef.current) return
@@ -36,6 +37,8 @@ export function MovingTarget({ char, audio, onEnd, onBack }: Props) {
 
   useEffect(() => {
     audio.start('movingTarget')
+    const onKey = (e: KeyboardEvent) => { if (e.code === 'Space' || e.key === 'Enter') { e.preventDefault(); tapMeterRef.current?.() } }
+    window.addEventListener('keydown', onKey)
     function loop() {
       if (!activeRef.current) return
       meterRef.current += dirRef.current * speedRef.current
@@ -45,7 +48,7 @@ export function MovingTarget({ char, audio, onEnd, onBack }: Props) {
       rafRef.current = requestAnimationFrame(loop)
     }
     rafRef.current = requestAnimationFrame(loop)
-    return () => { activeRef.current = false; cancelAnimationFrame(rafRef.current) }
+    return () => { activeRef.current = false; cancelAnimationFrame(rafRef.current); window.removeEventListener('keydown', onKey) }
   }, [audio, endGame])
 
   const tapMeter = useCallback(() => {
@@ -92,6 +95,8 @@ export function MovingTarget({ char, audio, onEnd, onBack }: Props) {
       setTimeout(() => endGame(), 1200)
     }
   }, [audio, char.color, done, endGame])
+
+  tapMeterRef.current = tapMeter
 
   const meterPct = meterPos * 100
   const perfectLeft = (0.5 - PERFECT_ZONE) * 100
@@ -157,7 +162,7 @@ export function MovingTarget({ char, audio, onEnd, onBack }: Props) {
           touchAction: 'none',
         }}
       >
-        🎯 タップ！
+        🎯 タップ！ [Space]
       </button>
 
       {particles.map(p => <ScoreParticle key={p.id} p={p} />)}

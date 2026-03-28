@@ -39,6 +39,8 @@ export function SpinTarget({ char, audio, onEnd, onBack }: Props) {
 
   useEffect(() => {
     audio.start('spinTarget')
+    const onKey = (e: KeyboardEvent) => { if (e.code === 'Space' || e.key === 'Enter') { e.preventDefault(); tap() } }
+    window.addEventListener('keydown', onKey)
     function loop() {
       if (!activeRef.current) return
       angleRef.current = (angleRef.current + speedRef.current * dirRef.current + Math.PI * 2) % (Math.PI * 2)
@@ -46,7 +48,7 @@ export function SpinTarget({ char, audio, onEnd, onBack }: Props) {
       rafRef.current = requestAnimationFrame(loop)
     }
     rafRef.current = requestAnimationFrame(loop)
-    return () => { activeRef.current = false; cancelAnimationFrame(rafRef.current) }
+    return () => { activeRef.current = false; cancelAnimationFrame(rafRef.current); window.removeEventListener('keydown', onKey) }
   }, [audio, endGame])
 
   function tap() {
@@ -128,7 +130,7 @@ export function SpinTarget({ char, audio, onEnd, onBack }: Props) {
           style={{ background: done ? 'rgba(255,255,255,.2)' : char.color, boxShadow: done ? 'none' : `0 0 30px ${char.color}`, border: 'none', touchAction: 'none', cursor: done ? 'default' : 'pointer' }}>
           🎯 ストップ！
         </button>
-        <div className="text-xs" style={{ color: 'rgba(255,255,255,.4)' }}>みどりのゾーンでとめよう！</div>
+        <div className="text-xs" style={{ color: 'rgba(255,255,255,.4)' }}>クリック or スペースキーで止める！</div>
       </div>
       {particles.map(p => <ScoreParticle key={p.id} p={p} />)}
     </div>

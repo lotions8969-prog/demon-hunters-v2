@@ -83,7 +83,18 @@ export function DemonicSort({ char, audio, onEnd, onBack }: Props) {
     }
     spawnRef.current = window.setTimeout(spawn, 600)
 
-    return () => { activeRef.current = false; cancelAnimationFrame(rafRef.current); clearInterval(timerRef.current); clearTimeout(spawnRef.current) }
+    const onKey = (e: KeyboardEvent) => {
+      if (!activeRef.current) return
+      const dir: 'left' | 'right' | null =
+        e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A' ? 'left' :
+        e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D' ? 'right' : null
+      if (!dir) return
+      e.preventDefault()
+      const target = demonsRef.current.sort((a, b) => b.y - a.y)[0]
+      if (target) sortDemon(target.id, dir, target.x, target.y)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => { activeRef.current = false; cancelAnimationFrame(rafRef.current); clearInterval(timerRef.current); clearTimeout(spawnRef.current); window.removeEventListener('keydown', onKey) }
   }, [audio, endGame])
 
   function sortDemon(id: number, direction: 'left' | 'right', cx: number, cy: number) {
@@ -126,11 +137,11 @@ export function DemonicSort({ char, audio, onEnd, onBack }: Props) {
       <div className="absolute bottom-16 left-0 right-0 flex justify-between px-4 z-20">
         <div className="flex flex-col items-center gap-1">
           <div className="font-black text-2xl" style={{ color: '#EF4444' }}>👹 あく</div>
-          <div className="text-xs" style={{ color: 'rgba(255,255,255,.4)' }}>← ひだり</div>
+          <div className="text-xs" style={{ color: 'rgba(255,255,255,.4)' }}>← / A キー</div>
         </div>
         <div className="flex flex-col items-center gap-1">
           <div className="font-black text-2xl" style={{ color: '#4ADE80' }}>👼 ぜん</div>
-          <div className="text-xs" style={{ color: 'rgba(255,255,255,.4)' }}>みぎ →</div>
+          <div className="text-xs" style={{ color: 'rgba(255,255,255,.4)' }}>D / → キー</div>
         </div>
       </div>
 

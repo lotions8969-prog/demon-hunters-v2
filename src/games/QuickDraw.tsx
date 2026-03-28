@@ -26,7 +26,9 @@ export function QuickDraw({ char, audio, onEnd, onBack }: Props) {
 
   useEffect(() => {
     audio.start('quickDraw'); setTimeout(nextRound, 800)
-    return () => { activeRef.current=false; clearTimeout(waitRef.current) }
+    const onKey = (e: KeyboardEvent) => { if (e.code === 'Space' || e.key === 'Enter') { e.preventDefault(); tap() } }
+    window.addEventListener('keydown', onKey)
+    return () => { activeRef.current=false; clearTimeout(waitRef.current); window.removeEventListener('keydown', onKey) }
   }, [audio, nextRound])
 
   function tap() {
@@ -79,7 +81,7 @@ export function QuickDraw({ char, audio, onEnd, onBack }: Props) {
           {reaction<200?'⚡ はやすぎる！':reaction<350?'🏆 すごい！':reaction<500?'✨ グッド！':'👍 OK！'}
         </div>
       )}
-      <div style={{color:'rgba(255,255,255,.3)',fontSize:'.8rem'}}>どこかをタップ</div>
+      <div style={{color:'rgba(255,255,255,.3)',fontSize:'.8rem'}}>クリック or スペースキー</div>
     </div>
   )
 }

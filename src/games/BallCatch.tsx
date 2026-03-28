@@ -22,6 +22,7 @@ export function BallCatch({ char, audio, onEnd, onBack }: Props) {
   const ballsRef=useRef<Ball[]>([]),nextId=useRef(0)
   const rafRef=useRef(0),timerRef=useRef(0),spawnRef=useRef(0)
   const activeRef=useRef(true)
+  const keysRef=useRef<Record<string,boolean>>({})
   const PLAT_W=22
 
   const endGame=useCallback(()=>{
@@ -34,9 +35,28 @@ export function BallCatch({ char, audio, onEnd, onBack }: Props) {
   useEffect(()=>{
     audio.start('ballCatch')
     const H=window.innerHeight,PLAT_Y=H-80
+
+    const onKeyDown=(e:KeyboardEvent)=>{ keysRef.current[e.key]=true }
+    const onKeyUp=(e:KeyboardEvent)=>{ keysRef.current[e.key]=false }
+    window.addEventListener('keydown',onKeyDown)
+    window.addEventListener('keyup',onKeyUp)
+
     function loop(){
       if(!activeRef.current)return
       const W=window.innerWidth
+
+      // Keyboard movement
+      const k=keysRef.current
+      const SPEED=1.5
+      if(k['ArrowLeft']||k['a']||k['A']){
+        platRef.current=Math.max(PLAT_W/2,platRef.current-SPEED)
+        setPlatX(platRef.current)
+      }
+      if(k['ArrowRight']||k['d']||k['D']){
+        platRef.current=Math.min(100-PLAT_W/2,platRef.current+SPEED)
+        setPlatX(platRef.current)
+      }
+
       const platLeft=(platRef.current/100)*W-(PLAT_W/200*W)
       const platRight=platLeft+(PLAT_W/100*W)
       const kept:Ball[]=[]
@@ -67,7 +87,12 @@ export function BallCatch({ char, audio, onEnd, onBack }: Props) {
       spawnRef.current=window.setTimeout(spawn,rate)
     }
     spawnRef.current=window.setTimeout(spawn,400)
-    return()=>{activeRef.current=false;cancelAnimationFrame(rafRef.current);clearTimeout(spawnRef.current);clearInterval(timerRef.current)}
+    return()=>{
+      activeRef.current=false
+      cancelAnimationFrame(rafRef.current);clearTimeout(spawnRef.current);clearInterval(timerRef.current)
+      window.removeEventListener('keydown',onKeyDown)
+      window.removeEventListener('keyup',onKeyUp)
+    }
   },[audio,endGame])
 
   function movePlat(e:React.PointerEvent){
@@ -96,7 +121,9 @@ export function BallCatch({ char, audio, onEnd, onBack }: Props) {
         <img src={char.img.profile} className="w-10 h-10 rounded-full object-cover" style={{border:`2px solid ${char.color}`}} draggable={false}/>
       </div>
       {particles.map(p=><ScoreParticle key={p.id} p={p}/>)}
-      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap pointer-events-none text-xs" style={{color:'rgba(255,255,255,.4)'}}>ゆびをうごかしてキャッチ！👹をさけて！</div>
+      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap pointer-events-none text-xs" style={{color:'rgba(255,255,255,.4)'}}>
+        マウス移動 or ← → キーで移動！👹をさけて！
+      </div>
     </div>
   )
 }
