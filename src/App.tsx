@@ -20,6 +20,41 @@ import { SpeedTap } from '@/games/SpeedTap'
 import { MovingTarget } from '@/games/MovingTarget'
 import { DemonAvoid } from '@/games/DemonAvoid'
 import { PhotoSnap } from '@/games/PhotoSnap'
+import { SnakeGame } from '@/games/SnakeGame'
+import { TowerStack } from '@/games/TowerStack'
+import { TypeRace } from '@/games/TypeRace'
+import { ColorMatch } from '@/games/ColorMatch'
+import { DashDodge } from '@/games/DashDodge'
+import { SpaceShooter } from '@/games/SpaceShooter'
+import { PongGame } from '@/games/PongGame'
+import { FlappyChar } from '@/games/FlappyChar'
+import { BrickBreaker } from '@/games/BrickBreaker'
+import { MathBlitz } from '@/games/MathBlitz'
+import { WhackMole } from '@/games/WhackMole'
+import { WordScramble } from '@/games/WordScramble'
+import { ReflexTest } from '@/games/ReflexTest'
+import { TicTacToe } from '@/games/TicTacToe'
+import { CatchOrder } from '@/games/CatchOrder'
+import { HigherLower } from '@/games/HigherLower'
+import { OddOneOut } from '@/games/OddOneOut'
+import { TargetBlast } from '@/games/TargetBlast'
+import { GravityFlip } from '@/games/GravityFlip'
+import { EndlessRun } from '@/games/EndlessRun'
+import { BombDefuse } from '@/games/BombDefuse'
+import { SpinTarget } from '@/games/SpinTarget'
+import { NumberRain } from '@/games/NumberRain'
+import { GhostChase } from '@/games/GhostChase'
+import { PowerShot } from '@/games/PowerShot'
+import { TileSweep } from '@/games/TileSweep'
+import { LaserDodge } from '@/games/LaserDodge'
+import { DemonicSort } from '@/games/DemonicSort'
+import { ShadowMatch } from '@/games/ShadowMatch'
+import { TapRhythm } from '@/games/TapRhythm'
+import { ColorStop } from '@/games/ColorStop'
+import { IconFlash } from '@/games/IconFlash'
+import { ChainBomb } from '@/games/ChainBomb'
+import { AsteroidRun } from '@/games/AsteroidRun'
+import { RocketBoost } from '@/games/RocketBoost'
 import { makeAudio, YT_PLAYLIST } from '@/lib/audio'
 import { GAMES } from '@/lib/characters'
 import type { Character, GameId } from '@/lib/types'
@@ -87,6 +122,41 @@ export default function App() {
       {screen === 'game' && char && audio && gameId === 'movingTarget' && <MovingTarget char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
       {screen === 'game' && char && audio && gameId === 'demonAvoid' && <DemonAvoid char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
       {screen === 'game' && char && audio && gameId === 'photoSnap' && <PhotoSnap char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
+      {screen === 'game' && char && audio && gameId === 'snake' && <SnakeGame char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
+      {screen === 'game' && char && audio && gameId === 'towerStack' && <TowerStack char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
+      {screen === 'game' && char && audio && gameId === 'typeRace' && <TypeRace char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
+      {screen === 'game' && char && audio && gameId === 'colorMatch' && <ColorMatch char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
+      {screen === 'game' && char && audio && gameId === 'dashDodge' && <DashDodge char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
+      {screen === 'game' && char && audio && gameId === 'spaceShooter' && <SpaceShooter char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
+      {screen === 'game' && char && audio && gameId === 'pongGame' && <PongGame char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
+      {screen === 'game' && char && audio && gameId === 'flappyChar' && <FlappyChar char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
+      {screen === 'game' && char && audio && gameId === 'brickBreaker' && <BrickBreaker char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
+      {screen === 'game' && char && audio && gameId === 'mathBlitz' && <MathBlitz char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
+      {screen === 'game' && char && audio && gameId === 'whackMole' && <WhackMole char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
+      {screen === 'game' && char && audio && gameId === 'wordScramble' && <WordScramble char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
+      {screen === 'game' && char && audio && gameId === 'reflexTest' && <ReflexTest char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
+      {screen === 'game' && char && audio && gameId === 'ticTacToe' && <TicTacToe char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
+      {screen === 'game' && char && audio && gameId === 'catchOrder' && <CatchOrder char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
+      {screen === 'game' && char && audio && gameId === 'higherLower' && <HigherLower char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
+      {screen === 'game' && char && audio && gameId === 'oddOneOut' && <OddOneOut char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
+      {screen === 'game' && char && audio && gameId === 'targetBlast' && <TargetBlast char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
+      {screen === 'game' && char && audio && gameId === 'gravityFlip' && <GravityFlip char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
+      {screen === 'game' && char && audio && gameId === 'endlessRun' && <EndlessRun char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
+      {screen === 'game' && char && audio && gameId === 'bombDefuse' && <BombDefuse char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
+      {screen === 'game' && char && audio && gameId === 'spinTarget' && <SpinTarget char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
+      {screen === 'game' && char && audio && gameId === 'numberRain' && <NumberRain char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
+      {screen === 'game' && char && audio && gameId === 'ghostChase' && <GhostChase char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
+      {screen === 'game' && char && audio && gameId === 'powerShot' && <PowerShot char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
+      {screen === 'game' && char && audio && gameId === 'tileSweep' && <TileSweep char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
+      {screen === 'game' && char && audio && gameId === 'laserDodge' && <LaserDodge char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
+      {screen === 'game' && char && audio && gameId === 'demonicSort' && <DemonicSort char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
+      {screen === 'game' && char && audio && gameId === 'shadowMatch' && <ShadowMatch char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
+      {screen === 'game' && char && audio && gameId === 'tapRhythm' && <TapRhythm char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
+      {screen === 'game' && char && audio && gameId === 'colorStop' && <ColorStop char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
+      {screen === 'game' && char && audio && gameId === 'iconFlash' && <IconFlash char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
+      {screen === 'game' && char && audio && gameId === 'chainBomb' && <ChainBomb char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
+      {screen === 'game' && char && audio && gameId === 'asteroidRun' && <AsteroidRun char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
+      {screen === 'game' && char && audio && gameId === 'rocketBoost' && <RocketBoost char={char} audio={audio} onEnd={gameEnd} onBack={backToHub} />}
       {screen === 'result' && char && game && (
         <ResultScreen char={char} score={lastScore} highScore={highScores[gameId!] || 0} gameLabel={`${game.emoji} ${game.label}`} onReplay={() => setScreen('game')} onHub={backToHub} />
       )}

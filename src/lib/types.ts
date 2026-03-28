@@ -1,5 +1,5 @@
 export type CharId = 'rumi' | 'mira' | 'zoey'
-export type GameId = 'starCatch' | 'demonShoot' | 'rhythmTap' | 'memoryCards' | 'ballCatch' | 'quickDraw' | 'janken' | 'numberTouch' | 'bubblePop' | 'hideSeek' | 'puzzle' | 'simonSays' | 'slot' | 'speedTap' | 'movingTarget' | 'demonAvoid' | 'photoSnap'
+export type GameId = 'starCatch' | 'demonShoot' | 'rhythmTap' | 'memoryCards' | 'ballCatch' | 'quickDraw' | 'janken' | 'numberTouch' | 'bubblePop' | 'hideSeek' | 'puzzle' | 'simonSays' | 'slot' | 'speedTap' | 'movingTarget' | 'demonAvoid' | 'photoSnap' | 'snake' | 'towerStack' | 'typeRace' | 'colorMatch' | 'dashDodge' | 'spaceShooter' | 'pongGame' | 'flappyChar' | 'brickBreaker' | 'mathBlitz' | 'whackMole' | 'wordScramble' | 'reflexTest' | 'ticTacToe' | 'catchOrder' | 'higherLower' | 'oddOneOut' | 'targetBlast' | 'gravityFlip' | 'endlessRun' | 'bombDefuse' | 'spinTarget' | 'numberRain' | 'ghostChase' | 'powerShot' | 'tileSweep' | 'laserDodge' | 'demonicSort' | 'shadowMatch' | 'tapRhythm' | 'colorStop' | 'iconFlash' | 'chainBomb' | 'asteroidRun' | 'rocketBoost'
 export interface Character {
   id: CharId
   name: string

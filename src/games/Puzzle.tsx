@@ -57,7 +57,7 @@ export function Puzzle({ char, audio, onEnd, onBack }: Props) {
   }
 
   useEffect(() => {
-    audio.start()
+    audio.start('puzzle')
     newPuzzle()
     timerRef.current = window.setInterval(() => {
       const n = timeRef.current - 1

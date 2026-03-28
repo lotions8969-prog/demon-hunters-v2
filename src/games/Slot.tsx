@@ -26,7 +26,7 @@ export function Slot({ char, audio, onEnd, onBack }: Props) {
   const intervalRefs = useRef<number[]>([0, 0, 0])
 
   useEffect(() => {
-    audio.start()
+    audio.start('slot')
     return () => { activeRef.current = false }
   }, [audio])
 

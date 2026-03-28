@@ -46,7 +46,7 @@ export function PhotoSnap({ char, audio, onEnd, onBack }: Props) {
   }, [audio, onEnd])
 
   useEffect(() => {
-    audio.start()
+    audio.start('photoSnap')
     const W = window.innerWidth
     const H = window.innerHeight
 

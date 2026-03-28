@@ -41,7 +41,7 @@ export function StarCatch({ char, audio, onEnd, onBack }: Props) {
 
   useEffect(() => {
     setTimeout(() => setShowTip(false), 3000)
-    audio.start()
+    audio.start('starCatch')
     const H = window.innerHeight
     function loop() {
       if (!activeRef.current) return

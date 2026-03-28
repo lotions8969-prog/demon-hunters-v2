@@ -25,7 +25,7 @@ export function QuickDraw({ char, audio, onEnd, onBack }: Props) {
   }, [audio])
 
   useEffect(() => {
-    audio.start(); setTimeout(nextRound, 800)
+    audio.start('quickDraw'); setTimeout(nextRound, 800)
     return () => { activeRef.current=false; clearTimeout(waitRef.current) }
   }, [audio, nextRound])
 

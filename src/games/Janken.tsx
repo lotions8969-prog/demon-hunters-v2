@@ -15,7 +15,7 @@ export function Janken({ char, audio, onEnd, onBack }: Props) {
   const [result,setResult]=useState<'win'|'lose'|'draw'|null>(null)
   const winsRef=useRef(0), activeRef=useRef(true)
 
-  useEffect(()=>{ audio.start(); return()=>{ activeRef.current=false } },[audio])
+  useEffect(()=>{ audio.start('janken'); return()=>{ activeRef.current=false } },[audio])
 
   function choose(idx:number){
     if(phase!=='choose')return

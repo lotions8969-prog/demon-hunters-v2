@@ -35,7 +35,7 @@ export function MovingTarget({ char, audio, onEnd, onBack }: Props) {
   }, [audio, onEnd])
 
   useEffect(() => {
-    audio.start()
+    audio.start('movingTarget')
     function loop() {
       if (!activeRef.current) return
       meterRef.current += dirRef.current * speedRef.current

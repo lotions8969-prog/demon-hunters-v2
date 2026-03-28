@@ -41,7 +41,7 @@ export function MemoryCards({ char, audio, onEnd, onBack }: Props) {
   },[audio,onEnd])
 
   useEffect(()=>{
-    audio.start()
+    audio.start('memoryCards')
     timerRef.current=window.setInterval(()=>{
       const n=timeRef.current-1;timeRef.current=n;setTimeLeft(n)
       if(n<=0){clearInterval(timerRef.current);endGame(0)}

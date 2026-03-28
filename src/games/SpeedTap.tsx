@@ -32,7 +32,7 @@ export function SpeedTap({ char, audio, onEnd, onBack }: Props) {
   }
 
   useEffect(() => {
-    audio.start()
+    audio.start('speedTap')
     setCirclePos(randomPos())
     appearedAt.current = Date.now()
     return () => { activeRef.current = false }

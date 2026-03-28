@@ -28,7 +28,7 @@ export function RhythmTap({ char, audio, onEnd, onBack }: Props) {
 
   useEffect(()=>{
     TARGET_Y.current = window.innerHeight - 130
-    audio.start()
+    audio.start('rhythmTap')
     function loop(){
       if(!activeRef.current)return
       notesRef.current=notesRef.current.map(n=>({...n,y:n.y+n.speed})).filter(n=>n.y<window.innerHeight+20)

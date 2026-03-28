@@ -1,53 +1,136 @@
-import { useRef } from 'react'
+import { useRef, useEffect } from 'react'
 import { CHARS } from '@/lib/characters'
 
 interface TitleScreenProps { onStart: () => void }
 
 export function TitleScreen({ onStart }: TitleScreenProps) {
-  const stars = useRef(
-    Array.from({ length: 20 }, (_, i) => ({
-      id: i, x: Math.random() * 100, y: Math.random() * 100,
-      size: 10 + Math.random() * 16,
-      color: ['#C084FC', '#FB7185', '#38BDF8', '#FFD700'][i % 4],
-      dur: 1.8 + Math.random() * 2.8, delay: Math.random() * 3,
+  const orbs = useRef(
+    Array.from({ length: 6 }, (_, i) => ({
+      id: i,
+      x: [15, 80, 50, 20, 75, 40][i],
+      y: [20, 15, 70, 80, 65, 45][i],
+      size: [280, 220, 200, 180, 240, 160][i],
+      color: ['#C084FC', '#38BDF8', '#FB7185', '#818CF8', '#C084FC', '#38BDF8'][i],
+      blur: [80, 60, 70, 50, 90, 55][i],
     }))
   )
 
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onStart() }
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [onStart])
+
   return (
-    <div className="fixed inset-0 flex flex-col items-center justify-center overflow-hidden p-4"
-      style={{ background: 'linear-gradient(160deg,#0a0320 0%,#180840 45%,#0d1535 100%)' }}>
-      {stars.current.map(s => (
-        <div key={s.id} className="absolute pointer-events-none animate-pulse"
-          style={{ left: `${s.x}%`, top: `${s.y}%`, fontSize: `${s.size}px`, color: s.color, animationDuration: `${s.dur}s`, animationDelay: `${s.delay}s` }}>✦</div>
+    <div className="fixed inset-0 flex flex-col items-center justify-center overflow-hidden" style={{ background: '#040012' }}>
+      {/* Ambient orbs */}
+      {orbs.current.map(o => (
+        <div
+          key={o.id}
+          className="absolute pointer-events-none rounded-full animate-glow"
+          style={{
+            left: `${o.x}%`, top: `${o.y}%`,
+            width: o.size, height: o.size,
+            background: o.color,
+            filter: `blur(${o.blur}px)`,
+            opacity: 0.18,
+            transform: 'translate(-50%,-50%)',
+            animationDelay: `${o.id * 0.4}s`,
+          }}
+        />
       ))}
 
-      {/* Character trio */}
-      <div className="flex gap-4 items-end mb-6 z-10">
+      {/* Grid overlay */}
+      <div className="absolute inset-0 pointer-events-none" style={{
+        backgroundImage: 'linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)',
+        backgroundSize: '60px 60px',
+      }} />
+
+      {/* Netflix badge */}
+      <div className="relative z-10 mb-6 animate-fade-in">
+        <div className="flex items-center gap-2 px-4 py-1.5 rounded-full glass" style={{ border: '1px solid rgba(229,9,20,0.4)' }}>
+          <span className="text-xs font-black tracking-[0.2em]" style={{ color: '#E50914' }}>NETFLIX</span>
+          <span className="text-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>×</span>
+          <span className="text-xs font-black tracking-[0.2em]" style={{ color: 'rgba(255,255,255,0.7)' }}>KPOP</span>
+        </div>
+      </div>
+
+      {/* Characters */}
+      <div className="relative z-10 flex items-end justify-center mb-8 animate-slide-up" style={{ animationDelay: '0.1s' }}>
         {CHARS.map((c, i) => (
-          <div key={c.id} className="text-center animate-float" style={{ animationDelay: `${i * 0.2}s` }}>
-            <div className="rounded-full overflow-hidden mx-auto" style={{ width: 'clamp(80px,18vw,120px)', height: 'clamp(80px,18vw,120px)', border: `3px solid ${c.color}`, boxShadow: `0 0 24px ${c.color}88` }}>
+          <div
+            key={c.id}
+            className="flex flex-col items-center animate-float"
+            style={{
+              animationDelay: `${i * 0.3}s`,
+              marginLeft: i > 0 ? '-12px' : 0,
+              zIndex: i === 1 ? 3 : i === 0 ? 2 : 1,
+              transform: i === 1 ? 'scale(1.12)' : 'scale(0.92)',
+            }}
+          >
+            <div
+              className="rounded-2xl overflow-hidden"
+              style={{
+                width: 'clamp(70px,15vw,110px)',
+                height: 'clamp(85px,18vw,135px)',
+                border: `2px solid ${c.color}66`,
+                boxShadow: `0 8px 32px ${c.color}44, inset 0 1px 0 rgba(255,255,255,0.15)`,
+              }}
+            >
               <img src={c.img.profile} className="w-full h-full object-cover" draggable={false} />
             </div>
-            <div className="text-sm font-bold mt-1" style={{ color: c.color }}>{c.name}</div>
           </div>
         ))}
       </div>
 
-      <div className="text-sm tracking-[.15em] font-black mb-1 z-10" style={{ color: '#E50914' }}>NETFLIX ✦ KPOP</div>
-      <div className="animate-float text-center z-10 mb-6">
-        <h1 className="font-black leading-tight" style={{ fontSize: 'clamp(2rem,9vw,4.5rem)', background: 'linear-gradient(135deg,#F0ABFC 0%,#818CF8 40%,#38BDF8 70%,#C084FC 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-          デーモン<br />ハンターズ
+      {/* Title */}
+      <div className="relative z-10 text-center mb-2 animate-slide-up" style={{ animationDelay: '0.15s' }}>
+        <h1
+          className="font-black leading-none tracking-tight"
+          style={{
+            fontSize: 'clamp(2.8rem,10vw,6rem)',
+            background: 'linear-gradient(135deg, #F0ABFC 0%, #C084FC 30%, #818CF8 60%, #38BDF8 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            filter: 'drop-shadow(0 0 40px rgba(192,132,252,0.4))',
+          }}
+        >
+          デーモン
+          <br />
+          ハンターズ
         </h1>
-        <div className="tracking-[.3em] mt-1 text-sm" style={{ color: '#94A3B8' }}>★ DEMON HUNTERS ★</div>
+        <p className="mt-2 text-sm font-semibold tracking-[0.3em]" style={{ color: 'rgba(255,255,255,0.35)' }}>
+          DEMON HUNTERS
+        </p>
       </div>
 
-      <button
-        onClick={onStart}
-        className="font-black rounded-full cursor-pointer z-10 animate-pulse"
-        style={{ padding: 'clamp(.9rem,3vw,1.2rem) clamp(2rem,6vw,3.5rem)', fontSize: 'clamp(1.2rem,4vw,1.6rem)', background: 'linear-gradient(135deg,#C084FC 0%,#818CF8 50%,#38BDF8 100%)', color: 'white', border: 'none', boxShadow: '0 8px 32px rgba(192,132,252,.5)', letterSpacing: '.08em' }}
-      >
-        ▶ あそぼう！
-      </button>
+      {/* Tagline */}
+      <p className="relative z-10 text-sm mb-8 animate-fade-in" style={{ color: 'rgba(255,255,255,0.45)', animationDelay: '0.3s' }}>
+        32のゲームでデーモンをたおせ！
+      </p>
+
+      {/* CTA */}
+      <div className="relative z-10 flex flex-col items-center gap-3 animate-slide-up" style={{ animationDelay: '0.25s' }}>
+        <button
+          onClick={onStart}
+          className="relative font-black rounded-2xl cursor-pointer overflow-hidden transition-all duration-200 active:scale-95"
+          style={{
+            padding: 'clamp(0.85rem,2.5vw,1.1rem) clamp(2.5rem,7vw,4rem)',
+            fontSize: 'clamp(1rem,3.5vw,1.3rem)',
+            background: 'linear-gradient(135deg, #C084FC 0%, #818CF8 50%, #38BDF8 100%)',
+            color: 'white',
+            border: 'none',
+            boxShadow: '0 8px 40px rgba(129,140,248,0.5), inset 0 1px 0 rgba(255,255,255,0.25)',
+            letterSpacing: '0.05em',
+          }}
+        >
+          ▶ あそぼう！
+        </button>
+        <p className="text-xs" style={{ color: 'rgba(255,255,255,0.25)' }}>Enter / Space でもスタート</p>
+      </div>
     </div>
   )
 }

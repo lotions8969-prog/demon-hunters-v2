@@ -47,7 +47,7 @@ export function BubblePop({ char, audio, onEnd, onBack }: Props) {
   }, [audio, onEnd])
 
   useEffect(() => {
-    audio.start()
+    audio.start('bubblePop')
     const W = window.innerWidth
     const H = window.innerHeight
 

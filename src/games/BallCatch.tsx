@@ -32,7 +32,7 @@ export function BallCatch({ char, audio, onEnd, onBack }: Props) {
   },[audio,onEnd])
 
   useEffect(()=>{
-    audio.start()
+    audio.start('ballCatch')
     const H=window.innerHeight,PLAT_Y=H-80
     function loop(){
       if(!activeRef.current)return

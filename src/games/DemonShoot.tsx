@@ -47,7 +47,7 @@ export function DemonShoot({ char, audio, onEnd, onBack }: Props) {
 
   useEffect(() => {
     setTimeout(() => setShowTip(false), 3500)
-    audio.start()
+    audio.start('demonShoot')
     const H = window.innerHeight
     function loop() {
       if (!activeRef.current) return

@@ -22,7 +22,7 @@ export function NumberTouch({ char, audio, onEnd, onBack }: Props) {
   },[audio,onEnd])
 
   useEffect(()=>{
-    audio.start()
+    audio.start('numberTouch')
     timerRef.current=window.setInterval(()=>{const n=timeRef.current-1;timeRef.current=n;setTimeLeft(n);if(n<=0)endGame(0)},1000)
     return()=>{activeRef.current=false;clearInterval(timerRef.current)}
   },[audio,endGame])

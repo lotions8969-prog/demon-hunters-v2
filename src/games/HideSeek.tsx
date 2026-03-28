@@ -49,7 +49,7 @@ export function HideSeek({ char, audio, onEnd, onBack }: Props) {
   }, [audio, onEnd])
 
   useEffect(() => {
-    audio.start()
+    audio.start('hideSeek')
 
     function spawnChar() {
       if (!activeRef.current) return

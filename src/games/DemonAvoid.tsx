@@ -61,7 +61,7 @@ export function DemonAvoid({ char, audio, onEnd, onBack }: Props) {
   }, [audio, onEnd])
 
   useEffect(() => {
-    audio.start()
+    audio.start('demonAvoid')
     const H = window.innerHeight
     const W = window.innerWidth
 

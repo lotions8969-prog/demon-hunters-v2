@@ -8,8 +8,9 @@ export function ScoreParticle({ p }: { p: ScoreParticleData }) {
         left: p.x - 40,
         top: p.y - 20,
         color: p.color,
-        fontSize: p.big ? '1.9rem' : '1.4rem',
-        textShadow: '0 2px 10px rgba(0,0,0,.9)',
+        fontSize: p.big ? '1.6rem' : '1.2rem',
+        textShadow: '0 2px 12px rgba(0,0,0,0.95)',
+        letterSpacing: '-0.02em',
       }}
     >
       {p.text}

@@ -56,7 +56,7 @@ export function SimonSays({ char, audio, onEnd, onBack }: Props) {
   }
 
   useEffect(() => {
-    audio.start()
+    audio.start('simonSays')
     const seq = [Math.floor(Math.random() * 4)]
     sequenceRef.current = seq
     setSequence(seq)
